@@ -14,9 +14,6 @@ const Icon = {
   Home: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
   ),
-  Terminal: () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-  ),
   Swap: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
   ),
@@ -96,7 +93,6 @@ function LogoJITO() {
 
 const navItems = [
   { icon: <Icon.Home />, label: "Overview", active: true },
-  { icon: <Icon.Terminal />, label: "Agent Console", active: false },
   { icon: <Icon.Swap />, label: "Swap", active: false },
   { icon: <Icon.Stake />, label: "Staking", active: false },
   { icon: <Icon.Chat />, label: "Chat", active: false },
@@ -133,19 +129,6 @@ const stats = [
     up: true,
     chart: [100, 105, 110, 115, 118, 122, 125, 126, 128, 130, 132, 134, 136, 135, 137, 138, 139, 140, 141, 142, 142, 142]
   },
-];
-
-type LogType = "info" | "success" | "warn" | "error";
-
-const consoleLogs: { type: LogType; time: string; msg: string }[] = [
-  { type: "info", time: "14:32:01", msg: "Scanning Jupiter routes..." },
-  { type: "success", time: "14:32:03", msg: "Best route found: SOL → USDC (0.06% slippage)" },
-  { type: "success", time: "14:32:05", msg: "Swap executed: 1.2 SOL → 198.42 USDC [tx: 5YqR...kF2a]" },
-  { type: "info", time: "14:33:10", msg: "Checking Marinade staking APY..." },
-  { type: "success", time: "14:33:12", msg: "mSOL APY: 7.24% — above threshold" },
-  { type: "warn", time: "14:34:00", msg: "Slippage alert: RAY→USDC route degraded to 0.42%" },
-  { type: "info", time: "14:34:15", msg: "Rebalancing portfolio: target 40% SOL / 35% USDC / 25% mSOL" },
-  { type: "success", time: "14:34:18", msg: "Rebalance complete — 3 txns confirmed" },
 ];
 
 const chatMessages = [
@@ -235,7 +218,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="p-4 lg:p-6 space-y-5">
+        <div className="p-4 lg:p-6 space-y-6">
           {/* ── Stats Grid ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.map((s) => (
@@ -269,56 +252,17 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* ── Agent Console ── */}
-          <div className="panel">
-            <div className="panel-header">
-              <span className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                Agent Console
-              </span>
-              <span className="text-[11px] text-green-600 font-[family-name:var(--font-jetbrains)]">
-                live
-              </span>
-            </div>
-            <div className="panel-body max-h-52 overflow-y-auto console-log">
-              {consoleLogs.map((log, i) => (
-                <div key={i} className="log-line">
-                  <span className="text-green-500 shrink-0 mr-3">{log.time}</span>
-                  <span
-                    className={
-                      log.type === "success"
-                        ? "log-success"
-                        : log.type === "warn"
-                          ? "log-warn"
-                          : log.type === "error"
-                            ? "log-error"
-                            : "log-info"
-                    }
-                  >
-                    {log.msg}
-                  </span>
-                </div>
-              ))}
-              <div className="log-line mt-1">
-                <span className="text-green-500 mr-3">14:34:20</span>
-                <span className="log-info">
-                  Awaiting next trigger<span className="blink"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Two-Column: Chat + Panels ── */}
-          <div className="grid gap-5 lg:grid-cols-2">
+          {/* ── Two-Column Layout ── */}
+          <div className="grid gap-5 md:grid-cols-2">
             {/* Chat UI */}
-            <div className="panel flex flex-col">
+            <div className="panel flex flex-col md:col-span-1 lg:col-span-1">
               <div className="panel-header">
                 <span className="flex items-center gap-2">
                   <Icon.Chat />
                   Agent Chat
                 </span>
               </div>
-              <div className="panel-body flex-1 space-y-3 max-h-72 overflow-y-auto">
+              <div className="panel-body flex-1 space-y-3 max-h-[400px] overflow-y-auto">
                 {chatMessages.map((msg, i) => (
                   <div
                     key={i}
@@ -360,7 +304,7 @@ export default function Dashboard() {
             </div>
 
             {/* Right Stack: Swap + Staking */}
-            <div className="space-y-5">
+            <div className="space-y-5 md:col-span-1 lg:col-span-1">
               {/* Swap Panel */}
               <div className="panel">
                 <div className="panel-header">
