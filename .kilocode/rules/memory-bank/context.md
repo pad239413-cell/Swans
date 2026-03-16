@@ -1,10 +1,10 @@
-# Active Context: Next.js Starter Template
+# Active Context: SwanAI — Autonomous Solana Agent MVP
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Project Status**: ✅ Landing page + Dashboard live
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+SwanAI is a dark-themed, Solana-focused DeFi agent landing page and dashboard built on Next.js 16 with TypeScript and Tailwind CSS 4. It features immersive animations (orbs, scanlines, pulsing network dots, terminal typewriter demo), green gradient accents (#22c55e → #15803d), Syne + JetBrains Mono typography, and a responsive sidebar dashboard with agent console, stats, chat, swap, and staking panels.
 
 ## Recently Completed
 
@@ -15,23 +15,34 @@ The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. I
 - [x] Memory bank documentation
 - [x] Recipe system for common features
 - [x] AI chat interface with mock AI responses
+- [x] SwanAI landing page (hero, features grid, how-it-works, modules, CTA, footer)
+- [x] SwanAI dashboard (/dashboard) with responsive sidebar, agent console, stats grid, chat UI, swap panel, staking panel
+- [x] Custom CSS: animated orbs, scanlines overlay, terminal demo with typewriter animation, pulsing network dots, subtle grid background, green gradient text/buttons, glow effects, feature cards with hover states
+- [x] Fonts: Syne (display) + JetBrains Mono (code/data) via next/font/google
+- [x] Mobile-first responsive design with collapsible sidebar, 2→4 col stat grid, 1→2 col layouts
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
+| `src/app/page.tsx` | Landing page (hero, features, how-it-works, modules, CTA) | ✅ Ready |
+| `src/app/dashboard/page.tsx` | Dashboard (sidebar, console, stats, chat, swap, staking) | ✅ Ready |
+| `src/app/layout.tsx` | Root layout with Syne + JetBrains Mono fonts | ✅ Ready |
+| `src/app/globals.css` | Full custom CSS (orbs, scanlines, terminal, grid, dots, glow) | ✅ Ready |
+| `src/app/chat/page.tsx` | Original AI chat interface (mock) | ✅ Ready |
+| `src/app/chat/mockAI.ts` | Mock AI response handler | ✅ Ready |
 | `.kilocode/` | AI context & recipes | ✅ Ready |
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
+Landing page and dashboard are built. Potential next steps:
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+1. Wire dashboard to real Solana RPC / wallet adapter
+2. Integrate Jupiter swap API for live token swaps
+3. Connect staking to Marinade/Jito protocols
+4. Add real AI agent backend (replace mock)
+5. Add wallet connect button (Phantom/Solflare/Backpack)
+6. Add analytics/charts with real on-chain data
 
 ## Quick Start Guide
 
@@ -87,3 +98,4 @@ export async function GET() {
 |------|---------|
 | Initial | Template created with base setup |
 | Mar 16 2026 | Built AI chat interface with mock AI responses, updated home page to redirect to chat, verified type checking and linting |
+| Mar 16 2026 | Built SwanAI landing page (hero, features, how-it-works, modules, CTA) + dashboard (/dashboard) with responsive sidebar, agent console, stats grid, chat UI, swap panel, staking panel. Custom CSS with animated orbs, scanlines, terminal typewriter, pulsing dots, grid bg, green gradients. Syne + JetBrains Mono fonts. Mobile-first. Typecheck + lint pass. |
