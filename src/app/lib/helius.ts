@@ -34,13 +34,14 @@ export async function getWalletBalance(address: string, apiKey: string): Promise
     const response = await fetch(`https://api.helius.xyz/v0/addresses/${address}/balances?api-key=${apiKey}`);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch balance: ${response.status} ${response.statusText}`);
+      console.error('Balance API error:', response.status, response.statusText);
+      return null;
     }
     
     const data = await response.json();
     return {
-      lamports: data.nativeBalance,
-      solBalance: data.nativeBalance / 1_000_000_000, // Convert lamports to SOL
+      lamports: data.nativeBalance || 0,
+      solBalance: (data.nativeBalance || 0) / 1_000_000_000,
       tokens: data.tokens || []
     };
   } catch (error) {
@@ -51,25 +52,32 @@ export async function getWalletBalance(address: string, apiKey: string): Promise
 
 /**
  * Fetches recent transactions for a given wallet address
+ * Uses the Helius RPC API for transactions
  */
 export async function getRecentTransactions(address: string, apiKey: string, limit = 10): Promise<Transaction[]> {
   try {
-    const response = await fetch(`https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=${limit}`);
+    // Use the proper Helius RPC endpoint for transactions
+    const response = await fetch(`https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=${limit}&type=ALL`);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
+      console.error('Transactions API error:', response.status, response.statusText);
+      return [];
     }
     
     const data = await response.json();
     
+    if (!Array.isArray(data) || data.length === 0) {
+      return [];
+    }
+    
     return data.map((tx: any) => ({
-      signature: tx.signature,
-      timestamp: tx.timestamp,
-      type: tx.type || 'Unknown',
-      fee: tx.fee / 1_000_000_000, // Convert lamports to SOL
-      amount: tx.amount,
-      token: tx.tokenSymbol,
-      status: tx.status || 'confirmed'
+      signature: tx.signature || '',
+      timestamp: tx.timestamp || Math.floor(Date.now() / 1000),
+      type: tx.type || tx.txType || 'Transfer',
+      fee: (tx.fee || 0) / 1_000_000_000,
+      amount: tx.amount ? tx.amount / 1_000_000_000 : undefined,
+      token: tx.tokenSymbol || undefined,
+      status: tx.status === 'failed' ? 'failed' : 'confirmed'
     }));
   } catch (error) {
     console.error('Error fetching transactions:', error);
