@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import ApiKeyModal from "../components/ApiKeyModal";
+import { getWalletBalance, getRecentTransactions, HeliusBalanceInfo, Transaction as HeliusTransaction } from "../lib/helius";
 
 /* ── Tiny SVG icons ── */
 const Icon = {
@@ -40,6 +42,12 @@ const Icon = {
   ),
   Info: () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  ),
+  Key: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+  ),
+  Refresh: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
   ),
 };
 
@@ -91,6 +99,33 @@ function LogoJITO() {
   );
 }
 
+// Generic token logo for unknown tokens
+function LogoToken({ symbol }: { symbol: string }) {
+  // Create a deterministic color based on the symbol
+  const getColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = Math.abs(hash) % 360;
+    return `hsl(${color}, 70%, 60%)`;
+  };
+
+  return (
+    <svg width="24" height="24" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="64" fill={getColor(symbol || 'TOKEN')}/>
+      <text x="64" y="76" textAnchor="middle" fill="white" fontWeight="bold" fontSize="40">
+        {symbol ? symbol.substring(0, 2).toUpperCase() : 'T'}
+      </text>
+    </svg>
+  );
+}
+
+function formatAddress(address: string): string {
+  if (!address || address.length < 10) return address;
+  return `${address.substring(0, 4)}...${address.substring(address.length - 4)}`;
+}
+
 const navItems = [
   { icon: <Icon.Home />, label: "Overview", active: true },
   { icon: <Icon.Swap />, label: "Swap", active: false },
@@ -100,7 +135,7 @@ const navItems = [
   { icon: <Icon.Settings />, label: "Settings", active: false },
 ];
 
-const stats = [
+const mockStats = [
   { 
     label: "Portfolio Value", 
     value: "$12,847.32", 
@@ -131,25 +166,153 @@ const stats = [
   },
 ];
 
-const chatMessages = [
+const mockChatMessages = [
   { role: "user" as const, text: "What's my current yield?" },
   { role: "agent" as const, text: "Your blended APY across all positions is 6.8%. Marinade mSOL is your top performer at 7.24%." },
   { role: "user" as const, text: "Swap 0.5 SOL to USDC" },
   { role: "agent" as const, text: "Routed via Jupiter. Swapped 0.5 SOL → 82.65 USDC at 0.04% slippage. Tx confirmed." },
 ];
 
-const stakingPositions = [
+const mockStakingPositions = [
   { token: "mSOL", logo: <LogoMSOL />, protocol: "Marinade", apy: "7.24%", staked: "24.5 SOL", fill: 72 },
   { token: "jitoSOL", logo: <LogoJITO />, protocol: "Jito", apy: "7.01%", staked: "12.0 SOL", fill: 45 },
   { token: "bSOL", logo: <LogoJITO />, protocol: "BlazeStake", apy: "6.89%", staked: "8.2 SOL", fill: 30 },
 ];
 
+const API_KEY_STORAGE_KEY = "swanai_helius_api_key";
+const WALLET_ADDRESS_STORAGE_KEY = "swanai_wallet_address";
+// Example Solana wallet addresses
+const EXAMPLE_ADDRESSES = [
+  "dingoBsmEJnGdNPMVziBK3CuPRjptTYVU6DeYs1H7Yv9",
+  "DYrNjjZ3SxEGcKFUd1dMouTPfWVWTVJnGAu5GQoxNC9H",
+  "2qeDTnfw8NcX7H9a4V9ecJQPJoVo1QYBga3qzZ4twMBJ",
+  "ACbUzQq9T4sfjcFFKxwgJfAfrrXgbm4iQDNPCUGmxVAV"
+];
+
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [apiKey, setApiKey] = useState<string>("");
+  const [walletAddress, setWalletAddress] = useState<string>("");
+  const [walletData, setWalletData] = useState<HeliusBalanceInfo | null>(null);
+  const [transactions, setTransactions] = useState<HeliusTransaction[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  // Load API key and wallet address from localStorage on mount
+  useEffect(() => {
+    const savedApiKey = typeof window !== 'undefined' ? localStorage.getItem(API_KEY_STORAGE_KEY) : null;
+    const savedWalletAddress = typeof window !== 'undefined' ? localStorage.getItem(WALLET_ADDRESS_STORAGE_KEY) : null;
+    
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+
+    if (savedWalletAddress) {
+      setWalletAddress(savedWalletAddress);
+    } else {
+      // Use a random example address if none is saved
+      const randomAddress = EXAMPLE_ADDRESSES[Math.floor(Math.random() * EXAMPLE_ADDRESSES.length)];
+      setWalletAddress(randomAddress);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(WALLET_ADDRESS_STORAGE_KEY, randomAddress);
+      }
+    }
+  }, []);
+
+  // Check if we need to show the modal on first load
+  useEffect(() => {
+    const shouldShowModal = !apiKey;
+    if (shouldShowModal) {
+      setIsModalOpen(true);
+    }
+  }, [apiKey]);
+
+  const fetchWalletData = async () => {
+    setIsLoading(true);
+    setError("");
+    
+    try {
+      // Fetch wallet balance and transactions in parallel
+      const [balance, txs] = await Promise.all([
+        getWalletBalance(walletAddress, apiKey),
+        getRecentTransactions(walletAddress, apiKey, 10)
+      ]);
+      
+      if (balance) {
+        setWalletData(balance);
+      } else {
+        setError("Failed to fetch wallet data. Please check your API key and try again.");
+      }
+      
+      setTransactions(txs);
+    } catch (err) {
+      setError("An error occurred while fetching data.");
+      console.error("Error fetching wallet data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fetch data when API key and wallet address are available
+  // We need to disable this rule to prevent an infinite loop
+  // since fetchWalletData depends on apiKey and walletAddress which are part of the dependency array
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (apiKey && walletAddress) {
+      fetchWalletData();
+    }
+  }, [apiKey, walletAddress]);
+
+  const handleSaveApiKey = (newApiKey: string) => {
+    setApiKey(newApiKey);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(API_KEY_STORAGE_KEY, newApiKey);
+    }
+    // Fetch data with the new API key
+    if (walletAddress) {
+      fetchWalletData();
+    }
+  };
+
+  const handleChangeWallet = () => {
+    const input = prompt("Enter a Solana wallet address to monitor:", walletAddress);
+    if (input && input.trim() !== "" && input !== walletAddress) {
+      const newWalletAddress = input.trim();
+      setWalletAddress(newWalletAddress);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(WALLET_ADDRESS_STORAGE_KEY, newWalletAddress);
+      }
+      // Fetch data for the new wallet
+      if (apiKey) {
+        fetchWalletData();
+      }
+    }
+  };
+
+  // Helper function to format numbers nicely
+  const formatNumber = (num: number, decimals = 2) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(num);
+  };
+
+  // Helper function to format tokens for display
+  const formatToken = (amount: number, symbol?: string) => {
+    return `${formatNumber(amount)} ${symbol || ''}`;
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f0fdf4]">
+      {/* API Key Modal */}
+      <ApiKeyModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveApiKey}
+      />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -210,46 +373,210 @@ export default function Dashboard() {
           </button>
           <h1 className="text-sm font-semibold text-green-800">Dashboard Overview</h1>
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 badge-green px-3 py-1 text-[11px] font-[family-name:var(--font-jetbrains)]">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center h-7 w-7 rounded-full bg-green-100 hover:bg-green-200 text-green-700"
+              title="Set API Key"
+            >
+              <Icon.Key />
+            </button>
+            <button
+              onClick={fetchWalletData}
+              className="flex items-center justify-center h-7 w-7 rounded-full bg-green-100 hover:bg-green-200 text-green-700"
+              title="Refresh Data"
+              disabled={isLoading || !apiKey}
+            >
+              <Icon.Refresh />
+            </button>
+            <button
+              onClick={handleChangeWallet}
+              className="hidden sm:inline-flex items-center gap-1.5 badge-green px-3 py-1 text-[11px] font-[family-name:var(--font-jetbrains)]"
+            >
               <Icon.Wallet />
-              7xKp...mN3d
-            </span>
+              {formatAddress(walletAddress)}
+            </button>
             <div className="h-7 w-7 rounded-full bg-gradient-to-br from-green-400 to-green-600" />
           </div>
         </header>
 
         <div className="p-4 lg:p-6 space-y-6">
-          {/* ── Stats Grid ── */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {stats.map((s) => (
-              <div key={s.label} className="stat-card p-4">
-                <div className="flex justify-between items-center">
-                  <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
-                    {s.label}
-                  </div>
-                  <div className={`flex items-center text-xs gap-1 ${s.up ? 'text-green-600' : 'text-red-500'}`}>
-                    {s.up ? '↑' : '↓'} {s.change}
-                  </div>
+          {/* API Key warning */}
+          {!apiKey && (
+            <div className="card-glossy p-4 border-yellow-300 bg-yellow-50/80">
+              <div className="flex items-start gap-3">
+                <div className="text-yellow-600">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
                 </div>
-                <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
-                  {s.value}
-                </div>
-                
-                {/* Mini chart */}
-                <div className="stats-chart mt-3">
-                  {s.chart.map((val, i) => (
-                    <div 
-                      key={i} 
-                      className="stats-chart-bar" 
-                      style={{ 
-                        height: `${val}%`,
-                        opacity: 0.5 + i / (2 * s.chart.length) // gradually increase opacity
-                      }}
-                    />
-                  ))}
+                <div>
+                  <h3 className="font-medium text-yellow-800">Helius API Key Required</h3>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    To view real Solana data, please provide a Helius API key.
+                  </p>
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="mt-2 px-4 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm flex items-center gap-1"
+                  >
+                    <Icon.Key /> Add API Key
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* Loading state */}
+          {isLoading && (
+            <div className="flex justify-center items-center p-8">
+              <div className="flex flex-col items-center">
+                <div className="h-12 w-12 rounded-full border-4 border-green-200 border-t-green-500 animate-spin"></div>
+                <p className="mt-4 text-green-700">Loading wallet data...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && (
+            <div className="card-glossy p-4 border-red-300 bg-red-50/80">
+              <div className="flex items-start gap-3">
+                <div className="text-red-600">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-medium text-red-800">Error</h3>
+                  <p className="text-sm text-red-700 mt-1">{error}</p>
+                  <button
+                    onClick={fetchWalletData}
+                    className="mt-2 px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm flex items-center gap-1"
+                  >
+                    <Icon.Refresh /> Try Again
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Stats Grid ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* SOL Balance */}
+            <div className="stat-card p-4">
+              <div className="flex justify-between items-center">
+                <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
+                  SOL Balance
+                </div>
+                <div className="flex items-center gap-1 text-green-600">
+                  <LogoSOL />
+                </div>
+              </div>
+              <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
+                {walletData ? formatNumber(walletData.solBalance) : "—"} SOL
+              </div>
+              
+              {/* Mini chart - mock for now */}
+              <div className="stats-chart mt-3">
+                {mockStats[0].chart.map((val, i) => (
+                  <div 
+                    key={i} 
+                    className="stats-chart-bar" 
+                    style={{ 
+                      height: `${val}%`,
+                      opacity: 0.5 + i / (2 * mockStats[0].chart.length)
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Token Count */}
+            <div className="stat-card p-4">
+              <div className="flex justify-between items-center">
+                <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
+                  Token Types
+                </div>
+                <div className="flex items-center gap-1 text-xs text-green-600">
+                  {walletData && walletData.tokens.length > 0 ? "Multiple" : "—"}
+                </div>
+              </div>
+              <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
+                {walletData ? walletData.tokens.length : "—"} Tokens
+              </div>
+              
+              <div className="stats-chart mt-3">
+                {mockStats[1].chart.map((val, i) => (
+                  <div 
+                    key={i} 
+                    className="stats-chart-bar" 
+                    style={{ 
+                      height: `${val}%`,
+                      opacity: 0.5 + i / (2 * mockStats[1].chart.length)
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Transactions */}
+            <div className="stat-card p-4">
+              <div className="flex justify-between items-center">
+                <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
+                  Recent Activity
+                </div>
+                <div className="text-xs text-green-600">
+                  {transactions.length > 0 ? "Last 24h" : "—"}
+                </div>
+              </div>
+              <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
+                {transactions.length} Transactions
+              </div>
+              
+              <div className="stats-chart mt-3">
+                {mockStats[2].chart.map((val, i) => (
+                  <div 
+                    key={i} 
+                    className="stats-chart-bar" 
+                    style={{ 
+                      height: `${val}%`,
+                      opacity: 0.5 + i / (2 * mockStats[2].chart.length)
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Data Freshness */}
+            <div className="stat-card p-4">
+              <div className="flex justify-between items-center">
+                <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
+                  Data Freshness
+                </div>
+                <div className="flex items-center gap-1 text-xs text-green-600">
+                  <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                  Live
+                </div>
+              </div>
+              <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
+                Just Updated
+              </div>
+              
+              <div className="stats-chart mt-3">
+                {mockStats[3].chart.map((val, i) => (
+                  <div 
+                    key={i} 
+                    className="stats-chart-bar" 
+                    style={{ 
+                      height: `${val}%`,
+                      opacity: 0.5 + i / (2 * mockStats[3].chart.length)
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* ── Two-Column Layout ── */}
@@ -263,7 +590,7 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="panel-body flex-1 space-y-3 max-h-[400px] overflow-y-auto">
-                {chatMessages.map((msg, i) => (
+                {mockChatMessages.map((msg, i) => (
                   <div
                     key={i}
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
@@ -303,95 +630,131 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Right Stack: Swap + Staking */}
+            {/* Right Stack: Token Display + Transactions */}
             <div className="space-y-5 md:col-span-1 lg:col-span-1">
-              {/* Swap Panel */}
+              {/* Tokens Panel */}
               <div className="panel">
                 <div className="panel-header">
                   <span className="flex items-center gap-2">
-                    <Icon.Swap />
-                    Quick Swap
+                    <Icon.Wallet />
+                    Token Holdings
                   </span>
-                  <span className="text-[11px] text-green-600">Jupiter</span>
+                  <span className="text-[11px] text-green-600">
+                    {walletData ? walletData.tokens.length : 0} tokens
+                  </span>
                 </div>
-                <div className="panel-body space-y-3">
-                  <div className="swap-input">
-                    <div>
-                      <div className="text-[10px] text-green-600 uppercase mb-1">From</div>
-                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
-                        2.5
+                <div className="panel-body">
+                  {walletData && walletData.tokens.length > 0 ? (
+                    <div className="space-y-3">
+                      {/* SOL entry */}
+                      <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-green-50/50">
+                        <div className="flex items-center gap-2">
+                          <LogoSOL />
+                          <div>
+                            <div className="font-medium">SOL</div>
+                            <div className="text-xs text-green-700">Native Token</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-[family-name:var(--font-jetbrains)] font-medium">
+                            {formatNumber(walletData.solBalance)}
+                          </div>
+                          <div className="text-xs text-green-700">
+                            ~${formatNumber(walletData.solBalance * 150)} {/* Mock price */}
+                          </div>
+                        </div>
                       </div>
+                      
+                      {/* Other tokens */}
+                      {walletData.tokens.slice(0, 5).map((token, i) => (
+                        <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg bg-green-50/50">
+                          <div className="flex items-center gap-2">
+                            {token.symbol === "USDC" ? <LogoUSDC /> : 
+                             token.symbol === "mSOL" ? <LogoMSOL /> :
+                             token.symbol === "jitoSOL" ? <LogoJITO /> :
+                             <LogoToken symbol={token.symbol || token.mint.substring(0, 4)} />
+                            }
+                            <div>
+                              <div className="font-medium">{token.symbol || formatAddress(token.mint)}</div>
+                              <div className="text-xs text-green-700 truncate max-w-[150px]" title={token.mint}>
+                                {formatAddress(token.mint)}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-[family-name:var(--font-jetbrains)] font-medium">
+                              {formatNumber(token.uiAmount)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Show more button if needed */}
+                      {walletData.tokens.length > 5 && (
+                        <button className="w-full py-2 text-center text-sm text-green-600 hover:text-green-800">
+                          + {walletData.tokens.length - 5} more tokens
+                        </button>
+                      )}
                     </div>
-                    <div className="token-badge">
-                      <LogoSOL />
-                      SOL
+                  ) : (
+                    <div className="text-center py-8 text-green-600">
+                      {isLoading ? (
+                        <div className="flex flex-col items-center">
+                          <div className="h-8 w-8 rounded-full border-2 border-green-200 border-t-green-500 animate-spin"></div>
+                          <p className="mt-2 text-sm">Loading tokens...</p>
+                        </div>
+                      ) : (
+                        <p>No tokens found in this wallet</p>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600">
-                      <Icon.ArrowDown />
-                    </div>
-                  </div>
-                  <div className="swap-input">
-                    <div>
-                      <div className="text-[10px] text-green-600 uppercase mb-1">To</div>
-                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
-                        412.38
-                      </div>
-                    </div>
-                    <div className="token-badge">
-                      <LogoUSDC />
-                      USDC
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-green-600">
-                    <span>Slippage: 0.08%</span>
-                    <span className="flex items-center gap-1">
-                      <Icon.Info />
-                      Route: SOL → wSOL → USDC
-                    </span>
-                  </div>
-                  <button className="btn-primary w-full justify-center text-sm !py-2.5">
-                    Execute Swap
-                  </button>
+                  )}
                 </div>
               </div>
 
-              {/* Staking Panel */}
+              {/* Recent Transactions */}
               <div className="panel">
                 <div className="panel-header">
                   <span className="flex items-center gap-2">
-                    <Icon.Stake />
-                    Staking Positions
+                    <Icon.Chart />
+                    Recent Transactions
                   </span>
-                  <span className="text-[11px] text-green-600">3 active</span>
                 </div>
-                <div className="panel-body space-y-4">
-                  {stakingPositions.map((pos) => (
-                    <div key={pos.token}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <div className="token-badge text-[11px]">
-                            {pos.logo}
-                            {pos.token}
+                <div className="panel-body">
+                  {transactions.length > 0 ? (
+                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                      {transactions.map((tx, i) => (
+                        <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg bg-green-50/50 text-sm">
+                          <div>
+                            <div className="font-medium text-green-900">
+                              {tx.type}
+                            </div>
+                            <div className="text-xs text-green-700">
+                              {new Date(tx.timestamp * 1000).toLocaleString()}
+                            </div>
                           </div>
-                          <span className="text-[11px] text-green-600">{pos.protocol}</span>
+                          <div className="text-right">
+                            <div className="font-[family-name:var(--font-jetbrains)] text-green-900">
+                              {formatAddress(tx.signature)}
+                            </div>
+                            <div className="text-xs text-green-700">
+                              Fee: {tx.fee.toFixed(6)} SOL
+                            </div>
+                          </div>
                         </div>
-                        <span className="text-xs text-green-600 font-[family-name:var(--font-jetbrains)]">
-                          {pos.apy} APY
-                        </span>
-                      </div>
-                      <div className="staking-bar">
-                        <div
-                          className="staking-bar-fill"
-                          style={{ width: `${pos.fill}%` }}
-                        />
-                      </div>
-                      <div className="mt-1 text-[10px] text-green-500">
-                        Staked: {pos.staked}
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <div className="text-center py-8 text-green-600">
+                      {isLoading ? (
+                        <div className="flex flex-col items-center">
+                          <div className="h-8 w-8 rounded-full border-2 border-green-200 border-t-green-500 animate-spin"></div>
+                          <p className="mt-2 text-sm">Loading transactions...</p>
+                        </div>
+                      ) : (
+                        <p>No recent transactions found</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
