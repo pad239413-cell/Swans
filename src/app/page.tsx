@@ -36,6 +36,72 @@ function IconArrow() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
   );
 }
+function IconSolana() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 128 128" fill="none">
+      <path d="M93.94,42.63H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="currentColor"/>
+      <path d="M38.58,30.75a1.25,1.25,0,0,1-.88-2.13L51.83,14.49a1.25,1.25,0,0,1,1.77,1.77L39.47,30.38A1.24,1.24,0,0,1,38.58,30.75Z" fill="currentColor"/>
+      <path d="M93.94,106.12H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="currentColor"/>
+      <path d="M38.58,118a1.24,1.24,0,0,1-.88-.36L23.56,103.5a1.25,1.25,0,0,1,1.77-1.77l14.14,14.14a1.25,1.25,0,0,1-.88,2.13Z" fill="currentColor"/>
+      <path d="M93.94,74.38H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="currentColor"/>
+      <path d="M38.58,86.25a1.25,1.25,0,0,1-.88-2.13L51.83,70a1.25,1.25,0,0,1,1.77,1.77L39.47,85.89A1.24,1.24,0,0,1,38.58,86.25Z" fill="currentColor"/>
+      <path d="M117.15,128H69.08a1.25,1.25,0,0,1-1.25-1.25V1.25A1.25,1.25,0,0,1,69.08,0h48.06a1.25,1.25,0,0,1,1.25,1.25V126.75A1.25,1.25,0,0,1,117.15,128ZM70.33,125.5h45.56V2.5H70.33Z" fill="currentColor"/>
+    </svg>
+  );
+}
+function IconArrowDown() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+  );
+}
+
+// SVG Token Logos
+function LogoSOL() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="64" fill="url(#solana-gradient)"/>
+      <path d="M93.94,42.63H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="white"/>
+      <path d="M38.58,30.75a1.25,1.25,0,0,1-.88-2.13L51.83,14.49a1.25,1.25,0,0,1,1.77,1.77L39.47,30.38A1.24,1.24,0,0,1,38.58,30.75Z" fill="white"/>
+      <path d="M93.94,106.12H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="white"/>
+      <path d="M38.58,118a1.24,1.24,0,0,1-.88-.36L23.56,103.5a1.25,1.25,0,0,1,1.77-1.77l14.14,14.14a1.25,1.25,0,0,1-.88,2.13Z" fill="white"/>
+      <path d="M93.94,74.38H13.78a1.25,1.25,0,0,1,0-2.5H93.94a1.25,1.25,0,0,1,0,2.5Z" fill="white"/>
+      <path d="M38.58,86.25a1.25,1.25,0,0,1-.88-2.13L51.83,70a1.25,1.25,0,0,1,1.77,1.77L39.47,85.89A1.24,1.24,0,0,1,38.58,86.25Z" fill="white"/>
+      <defs>
+        <linearGradient id="solana-gradient" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#9945FF"/>
+          <stop offset="1" stopColor="#14F195"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+function LogoUSDC() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="64" fill="#2775CA"/>
+      <path d="M64 108C88.3005 108 108 88.3005 108 64C108 39.6995 88.3005 20 64 20C39.6995 20 20 39.6995 20 64C20 88.3005 39.6995 108 64 108Z" fill="white"/>
+      <path d="M82.48 55.74C82.48 47.67 76.92 44.97 67.11 44.23V34H61.05V44.12C59.62 44.12 58.17 44.15 56.73 44.19V34H50.67V44.23C49.13 44.26 39.99 44.19 39.99 44.19V50.56C39.99 50.56 44.43 50.49 46.13 50.49C49.02 50.49 49.81 51.79 49.81 53.71V75.17C49.52 76.6 48.46 77.69 46.13 77.69C44.43 77.69 39.99 77.62 39.99 77.62V83.99H50.67V94.32H56.73V84.03C58.19 84.06 59.62 84.06 61.05 84.06V94.32H67.11V83.96C79.59 83.19 87 80.29 87 69.14C87 59.89 81.84 57.56 75.47 56.86C79.34 55.74 82.48 53.23 82.48 55.74ZM61.09 78.2C57.58 78.2 54.1 77.94 50.67 77.43V68.11C52.56 68.44 54.48 68.7 56.41 68.94C60.48 69.4 68.2 69.57 68.2 73.7C68.2 77.09 64.99 78.2 61.09 78.2ZM56.41 63.58C54.55 63.38 52.63 63.09 50.67 62.72V54.03C52.42 54.42 54.21 54.65 56.02 54.82C59.47 55.14 64.23 55.63 64.23 59.13C64.23 62.43 60.55 63.88 56.41 63.58Z" fill="#2775CA"/>
+    </svg>
+  );
+}
+function LogoMSOL() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="64" fill="#FBBF24"/>
+      <path d="M34 34L62.5 94L94 34" stroke="#065F46" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M34 94H94" stroke="#065F46" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+function LogoJITO() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="128" height="128" rx="64" fill="#059669"/>
+      <circle cx="64" cy="64" r="30" stroke="white" strokeWidth="8"/>
+      <circle cx="64" cy="64" r="10" fill="white"/>
+    </svg>
+  );
+}
 
 /* ── Data ── */
 const features = [
@@ -65,17 +131,17 @@ const modules = [
 
 export default function Home() {
   return (
-    <div className="bg-green-white relative min-h-screen">
+    <div className="bg-green-premium relative min-h-screen">
       {/* Orbs */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
       <div className="orb orb-3" />
 
       {/* ── Navbar ── */}
-      <nav className="sticky top-0 z-30 border-b border-[#dcfce7] bg-white/90 backdrop-blur-xl">
+      <nav className="navbar sticky top-0 z-30">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
-            <span className="text-gradient">Swan</span>
+            <span className="text-gradient" data-text="Swan">Swan</span>
             <span className="text-green-700 font-medium">AI</span>
           </Link>
           <div className="hidden gap-6 text-sm text-green-800 md:flex">
@@ -91,28 +157,34 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── Pulsing Network Dots ── */}
+      {/* ── Pulsing Network Dots with Lines ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="network-dot" style={{ top: "12%", left: "8%" }} />
+        <div className="network-line" style={{ top: "12%", left: "10%", width: "15%", transform: "rotate(25deg)" }} />
         <div className="network-dot" style={{ top: "28%", left: "85%" }} />
+        <div className="network-line" style={{ top: "40%", left: "55%", width: "30%", transform: "rotate(-15deg)" }} />
         <div className="network-dot" style={{ top: "55%", left: "15%" }} />
+        <div className="network-line" style={{ top: "50%", left: "20%", width: "20%", transform: "rotate(-30deg)" }} />
         <div className="network-dot" style={{ top: "70%", left: "92%" }} />
         <div className="network-dot" style={{ top: "40%", left: "50%" }} />
+        <div className="network-line" style={{ top: "55%", left: "25%", width: "25%", transform: "rotate(45deg)" }} />
         <div className="network-dot" style={{ top: "85%", left: "35%" }} />
         <div className="network-dot" style={{ top: "18%", left: "65%" }} />
+        <div className="network-line" style={{ top: "22%", left: "40%", width: "25%", transform: "rotate(10deg)" }} />
         <div className="network-dot" style={{ top: "62%", left: "72%" }} />
+        <div className="network-line" style={{ top: "55%", left: "60%", width: "15%", transform: "rotate(-20deg)" }} />
       </div>
 
       {/* ── Hero ── */}
       <section className="scanlines relative mx-auto max-w-6xl px-5 pb-20 pt-24 text-center md:pt-32 md:pb-28">
         <div className="relative z-10">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-green-300 bg-green-50 px-4 py-1.5 text-xs font-medium text-green-700">
-            <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full badge-green px-4 py-1.5 text-xs font-medium">
+            <span className="inline-block h-2 w-2 rounded-full badge-dot animate-pulse" />
             Solana Mainnet &middot; MVP Live
           </div>
           <h1 className="mx-auto max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-green-900 sm:text-5xl lg:text-6xl">
             Autonomous DeFi Agent <br className="hidden sm:block" />
-            for <span className="text-gradient">Solana</span>
+            for <span className="text-gradient" data-text="Solana">Solana</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-green-800 leading-relaxed sm:text-lg">
             SwanAI executes swaps, manages staking, optimizes yield, and rebalances your portfolio
@@ -127,7 +199,7 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Terminal Demo */}
+          {/* Terminal Demo - Enhanced */}
           <div className="mx-auto mt-14 max-w-2xl terminal glow-green fade-up">
             <div className="terminal-bar">
               <div className="terminal-dot bg-red-500/80" />
@@ -136,23 +208,37 @@ export default function Home() {
               <span className="ml-3 text-xs text-green-400/60">swan-agent — session_0xA3f</span>
             </div>
             <div className="terminal-body text-left">
-              <div className="terminal-line"><span className="text-green-300">$</span> swan init --network mainnet-beta</div>
-              <div className="terminal-line text-green-500/60">[info] Connecting to Solana RPC...</div>
-              <div className="terminal-line text-green-300">[ok] Wallet linked: 7xKp...mN3d</div>
-              <div className="terminal-line text-green-500/60">[info] Scanning Jupiter routes for SOL→USDC</div>
-              <div className="terminal-line text-green-300">[ok] Best route: SOL → wSOL → USDC (0.08% slippage)</div>
-              <div className="terminal-line text-green-500/60">[info] Executing swap: 2.5 SOL → 412.38 USDC</div>
-              <div className="terminal-line text-green-300">[ok] Tx confirmed: 5YqR...kF2a <span className="blink">█</span></div>
+              <div className="terminal-line">
+                <span className="dollar">$</span> <span className="command">swan</span> <span className="param">init</span> <span className="param">--network</span> <span className="string">mainnet-beta</span>
+              </div>
+              <div className="terminal-line">
+                <span className="log-info">[info]</span> Connecting to Solana RPC...
+              </div>
+              <div className="terminal-line">
+                <span className="log-success">[ok]</span> Wallet linked: <span className="string">7xKp...mN3d</span>
+              </div>
+              <div className="terminal-line">
+                <span className="log-info">[info]</span> Scanning Jupiter routes for <span className="param">SOL→USDC</span>
+              </div>
+              <div className="terminal-line">
+                <span className="log-success">[ok]</span> Best route: <span className="param">SOL → wSOL → USDC</span> (<span className="number">0.08%</span> slippage)
+              </div>
+              <div className="terminal-line">
+                <span className="log-info">[info]</span> Executing swap: <span className="number">2.5</span> <span className="param">SOL</span> → <span className="number">412.38</span> <span className="param">USDC</span>
+              </div>
+              <div className="terminal-line">
+                <span className="log-success">[ok]</span> Tx confirmed: <span className="string">5YqR...kF2a</span> <span className="blink"></span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Features Grid ── */}
-      <section id="features" className="relative z-10 mx-auto max-w-6xl px-5 py-20 bg-white/50">
+      <section id="features" className="bg-hex-grid relative z-10 mx-auto max-w-6xl px-5 py-20">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-green-900">
-            Built for <span className="text-gradient">Performance</span>
+            Built for <span className="text-gradient" data-text="Performance">Performance</span>
           </h2>
           <p className="mt-3 text-green-700 max-w-lg mx-auto">
             Every module is purpose-built for speed, safety, and yield on Solana.
@@ -160,8 +246,8 @@ export default function Home() {
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
-            <div key={f.title} className="feature-card fade-up">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
+            <div key={f.title} className="card-glossy fade-up p-6">
+              <div className="feature-icon mb-4">
                 {f.icon}
               </div>
               <h3 className="mb-2 text-lg font-semibold text-green-900">{f.title}</h3>
@@ -172,16 +258,16 @@ export default function Home() {
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how" className="relative z-10 mx-auto max-w-4xl px-5 py-20">
+      <section id="how" className="bg-3d-grid relative z-10 mx-auto max-w-4xl px-5 py-20">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-green-900">
-            How It <span className="text-gradient">Works</span>
+            How It <span className="text-gradient" data-text="Works">Works</span>
           </h2>
           <p className="mt-3 text-green-700">Four steps from connect to compound.</p>
         </div>
         <div className="space-y-6">
           {steps.map((s) => (
-            <div key={s.n} className="flex items-start gap-5 feature-card fade-up">
+            <div key={s.n} className="flex items-start gap-5 card-glossy fade-up p-6">
               <div className="step-number">{s.n}</div>
               <div>
                 <h3 className="text-lg font-semibold text-green-900">{s.title}</h3>
@@ -193,16 +279,16 @@ export default function Home() {
       </section>
 
       {/* ── Modules ── */}
-      <section id="modules" className="relative z-10 mx-auto max-w-4xl px-5 py-20 bg-white/50">
+      <section id="modules" className="bg-hex-grid relative z-10 mx-auto max-w-4xl px-5 py-20">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-green-900">
-            Agent <span className="text-gradient">Modules</span>
+            Agent <span className="text-gradient" data-text="Modules">Modules</span>
           </h2>
           <p className="mt-3 text-green-700">Composable modules powering the SwanAI stack.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((m) => (
-            <div key={m.label} className="feature-card flex items-center justify-between fade-up">
+            <div key={m.label} className="card-glossy flex items-center justify-between fade-up p-5">
               <span className="font-medium text-sm text-green-900">{m.label}</span>
               <span className="inline-flex items-center gap-1.5 text-xs text-green-700">
                 <span className={`inline-block h-2 w-2 rounded-full ${m.color}`} />
@@ -215,9 +301,9 @@ export default function Home() {
 
       {/* ── CTA ── */}
       <section className="relative z-10 mx-auto max-w-3xl px-5 py-24 text-center">
-        <div className="rounded-2xl border-2 border-green-300 bg-gradient-to-br from-green-50 to-white p-10 sm:p-14 glow-green">
+        <div className="rounded-2xl cta-card">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-green-900">
-            Ready to put your <span className="text-gradient">portfolio on autopilot</span>?
+            Ready to put your <span className="text-gradient" data-text="portfolio on autopilot">portfolio on autopilot</span>?
           </h2>
           <p className="mx-auto mt-4 max-w-md text-green-700 leading-relaxed">
             Join the MVP and let SwanAI manage your Solana DeFi positions around the clock.
@@ -234,7 +320,7 @@ export default function Home() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="relative z-10 border-t border-green-200 bg-white py-8">
+      <footer className="navbar relative z-10 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-5 text-xs text-green-600 sm:flex-row sm:justify-between">
           <span>&copy; {new Date().getFullYear()} SwanAI. All rights reserved.</span>
           <div className="flex gap-5">
