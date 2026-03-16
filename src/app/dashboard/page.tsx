@@ -88,7 +88,7 @@ export default function Dashboard() {
   const [chatInput, setChatInput] = useState("");
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0f]">
+    <div className="flex min-h-screen bg-[#f0fdf4]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -99,13 +99,13 @@ export default function Dashboard() {
 
       {/* ── Sidebar ── */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-        <div className="flex items-center justify-between p-4 border-b border-[#1e1e2a]">
+        <div className="flex items-center justify-between p-4 border-b border-green-700">
           <Link href="/" className="flex items-center gap-2 text-base font-bold tracking-tight">
-            <span className="text-gradient">Swan</span>
-            <span className="text-zinc-400 font-medium">AI</span>
+            <span className="text-gradient-light">Swan</span>
+            <span className="text-green-300 font-medium">AI</span>
           </Link>
           <button
-            className="lg:hidden text-zinc-400 hover:text-white"
+            className="lg:hidden text-green-300 hover:text-white"
             onClick={() => setSidebarOpen(false)}
           >
             <Icon.X />
@@ -126,13 +126,13 @@ export default function Dashboard() {
         </nav>
 
         {/* Agent Status */}
-        <div className="p-4 border-t border-[#1e1e2a]">
-          <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+        <div className="p-4 border-t border-green-700">
+          <div className="flex items-center gap-2 text-xs text-green-300">
+            <span className="inline-block h-2 w-2 rounded-full bg-green-400 animate-pulse" />
             Agent Active
           </div>
-          <div className="mt-1 text-[10px] text-zinc-600 font-[family-name:var(--font-jetbrains)]">
-            v0.1.0-mvp &middot; mainnet-beta
+          <div className="mt-1 text-[10px] text-green-500 font-[family-name:var(--font-jetbrains)]">
+            v0.1.0-mvp · mainnet-beta
           </div>
         </div>
       </aside>
@@ -140,19 +140,19 @@ export default function Dashboard() {
       {/* ── Main Content ── */}
       <main className="flex-1 overflow-y-auto">
         {/* Top Bar */}
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#1e1e2a] bg-[#0a0a0f]/90 backdrop-blur-lg px-4 py-3 lg:px-6">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-green-200 bg-white/90 backdrop-blur-lg px-4 py-3 lg:px-6">
           <button
-            className="lg:hidden text-zinc-400 hover:text-white"
+            className="lg:hidden text-green-700 hover:text-green-900"
             onClick={() => setSidebarOpen(true)}
           >
             <Icon.Menu />
           </button>
-          <h1 className="text-sm font-semibold text-zinc-300">Dashboard Overview</h1>
+          <h1 className="text-sm font-semibold text-green-800">Dashboard Overview</h1>
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#1e1e2a] bg-[#111118] px-3 py-1 text-[11px] text-zinc-400 font-[family-name:var(--font-jetbrains)]">
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-[11px] text-green-700 font-[family-name:var(--font-jetbrains)]">
               7xKp...mN3d
             </span>
-            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-green-500 to-green-700" />
+            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-green-400 to-green-600" />
           </div>
         </header>
 
@@ -161,13 +161,13 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.map((s) => (
               <div key={s.label} className="stat-card">
-                <div className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">
+                <div className="text-[11px] text-green-600 font-medium uppercase tracking-wider">
                   {s.label}
                 </div>
-                <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)]">
+                <div className="mt-1 text-xl font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
                   {s.value}
                 </div>
-                <div className="mt-0.5 text-xs text-green-400">{s.change}</div>
+                <div className="mt-0.5 text-xs text-green-600">{s.change}</div>
               </div>
             ))}
           </div>
@@ -179,14 +179,14 @@ export default function Dashboard() {
                 <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                 Agent Console
               </span>
-              <span className="text-[11px] text-zinc-500 font-[family-name:var(--font-jetbrains)]">
+              <span className="text-[11px] text-green-600 font-[family-name:var(--font-jetbrains)]">
                 live
               </span>
             </div>
             <div className="panel-body max-h-52 overflow-y-auto console-log">
               {consoleLogs.map((log, i) => (
                 <div key={i} className="flex gap-3">
-                  <span className="text-zinc-600 shrink-0">{log.time}</span>
+                  <span className="text-green-500 shrink-0">{log.time}</span>
                   <span
                     className={
                       log.type === "success"
@@ -203,7 +203,7 @@ export default function Dashboard() {
                 </div>
               ))}
               <div className="flex gap-3 mt-1">
-                <span className="text-zinc-600">14:34:20</span>
+                <span className="text-green-500">14:34:20</span>
                 <span className="log-info">
                   Awaiting next trigger<span className="blink">_</span>
                 </span>
@@ -237,7 +237,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-[#1e1e2a] p-3">
+              <div className="border-t border-green-200 p-3">
                 <form
                   className="flex items-center gap-2"
                   onSubmit={(e) => {
@@ -250,7 +250,7 @@ export default function Dashboard() {
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="Ask SwanAI..."
-                    className="flex-1 rounded-lg bg-[#0c0c14] border border-[#1e1e2a] px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-green-500/40"
+                    className="flex-1 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-900 placeholder:text-green-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   />
                   <button
                     type="submit"
@@ -271,13 +271,13 @@ export default function Dashboard() {
                     <Icon.Swap />
                     Quick Swap
                   </span>
-                  <span className="text-[11px] text-zinc-500">Jupiter</span>
+                  <span className="text-[11px] text-green-600">Jupiter</span>
                 </div>
                 <div className="panel-body space-y-3">
                   <div className="swap-input">
                     <div>
-                      <div className="text-[10px] text-zinc-500 uppercase mb-1">From</div>
-                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)]">
+                      <div className="text-[10px] text-green-600 uppercase mb-1">From</div>
+                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
                         2.5
                       </div>
                     </div>
@@ -287,14 +287,14 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex justify-center">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#1e1e2a] bg-[#0c0c14] text-zinc-400">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-green-200 bg-green-50 text-green-600">
                       <Icon.ArrowDown />
                     </div>
                   </div>
                   <div className="swap-input">
                     <div>
-                      <div className="text-[10px] text-zinc-500 uppercase mb-1">To</div>
-                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)]">
+                      <div className="text-[10px] text-green-600 uppercase mb-1">To</div>
+                      <div className="text-lg font-bold font-[family-name:var(--font-jetbrains)] text-green-900">
                         412.38
                       </div>
                     </div>
@@ -303,7 +303,7 @@ export default function Dashboard() {
                       USDC
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-zinc-500">
+                  <div className="flex items-center justify-between text-[11px] text-green-600">
                     <span>Slippage: 0.08%</span>
                     <span>Route: SOL → wSOL → USDC</span>
                   </div>
@@ -320,7 +320,7 @@ export default function Dashboard() {
                     <Icon.Stake />
                     Staking Positions
                   </span>
-                  <span className="text-[11px] text-zinc-500">3 active</span>
+                  <span className="text-[11px] text-green-600">3 active</span>
                 </div>
                 <div className="panel-body space-y-4">
                   {stakingPositions.map((pos) => (
@@ -328,9 +328,9 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <span className="token-badge text-[11px]">{pos.token}</span>
-                          <span className="text-[11px] text-zinc-500">{pos.protocol}</span>
+                          <span className="text-[11px] text-green-600">{pos.protocol}</span>
                         </div>
-                        <span className="text-xs text-green-400 font-[family-name:var(--font-jetbrains)]">
+                        <span className="text-xs text-green-600 font-[family-name:var(--font-jetbrains)]">
                           {pos.apy} APY
                         </span>
                       </div>
@@ -340,7 +340,7 @@ export default function Dashboard() {
                           style={{ width: `${pos.fill}%` }}
                         />
                       </div>
-                      <div className="mt-1 text-[10px] text-zinc-500">
+                      <div className="mt-1 text-[10px] text-green-500">
                         Staked: {pos.staked}
                       </div>
                     </div>
