@@ -256,9 +256,8 @@ export default function Dashboard() {
   };
   
   // Fetch data when API key and wallet address are available
-  // We need to disable this rule to prevent an infinite loop
-  // since fetchWalletData depends on apiKey and walletAddress which are part of the dependency array
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Fetch data when API key and wallet address are available
+   
   useEffect(() => {
     if (apiKey && walletAddress) {
       fetchWalletData();
